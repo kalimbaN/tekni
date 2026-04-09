@@ -33,7 +33,7 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
-// Test function
+// Test function with better error logging
 const testConnection = async () => {
   try {
     const client = await pool.connect();
@@ -42,7 +42,9 @@ const testConnection = async () => {
     client.release();
     return true;
   } catch (err) {
+    // Log the specific error message for debugging
     logger.error('❌ Database connection failed:', err.message);
+    logger.error('Full error details:', err);
     return false;
   }
 };
