@@ -1,0 +1,10 @@
+2026-04-09T13:34:20.367Z [[31merror[39m]: Query error: there is no unique or exclusion constraint matching the ON CONFLICT specification
+2026-04-09T13:34:20.368Z [[31merror[39m]: Failed query: INSERT INTO user_roles (user_id, role, assigned_by)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, role) DO NOTHING
+       RETURNING *
+2026-04-09T13:34:20.369Z [[31merror[39m]: 500 - there is no unique or exclusion constraint matching the ON CONFLICT specification - /api/auth/register - POST - ::1
+2026-04-09T13:36:47.792Z [[31merror[39m]: 500 - User with this email already exists - /api/auth/register - POST - ::1
+2026-04-09T13:38:57.617Z [[31merror[39m]: 500 - User with this email already exists - /api/auth/register - POST - ::1
+2026-04-09T13:43:43.339Z [[31merror[39m]: 500 - User with this email already exists - /api/auth/register - POST - ::1
+2026-04-09T13:47:24.079Z [[31merror[39m]: 500 - UserModel is not defined - /api/auth/me - GET - ::1

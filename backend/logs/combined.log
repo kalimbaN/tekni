@@ -1,0 +1,72 @@
+2026-04-09T13:32:32.109Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:32:32.114Z [[32minfo[39m]: 📅 Database time: Thu Apr 09 2026 13:32:32 GMT+0000 (Coordinated Universal Time)
+2026-04-09T13:32:32.117Z [[32minfo[39m]: 🚀 Server running on port 5000
+2026-04-09T13:32:32.117Z [[32minfo[39m]: 📍 Environment: development
+2026-04-09T13:32:32.117Z [[32minfo[39m]: 🔗 API URL: http://localhost:5000
+2026-04-09T13:34:20.245Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:34:20.248Z [[34mdebug[39m]: Executed query: SELECT * FROM users WHERE email = $1 - Duration: 10ms
+2026-04-09T13:34:20.250Z [[34mdebug[39m]: Executed query: SELECT * FROM users WHERE phone = $1 - Duration: 1ms
+2026-04-09T13:34:20.364Z [[34mdebug[39m]: Executed query: INSERT INTO users (email, phone, password_hash, full_name, user_type, is_verified, is_active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, email, phone, full_name, user_type, is_verified, created_at - Duration: 2ms
+2026-04-09T13:34:20.367Z [[31merror[39m]: Query error: there is no unique or exclusion constraint matching the ON CONFLICT specification
+2026-04-09T13:34:20.368Z [[31merror[39m]: Failed query: INSERT INTO user_roles (user_id, role, assigned_by)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, role) DO NOTHING
+       RETURNING *
+2026-04-09T13:34:20.369Z [[31merror[39m]: 500 - there is no unique or exclusion constraint matching the ON CONFLICT specification - /api/auth/register - POST - ::1
+2026-04-09T13:36:47.788Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:36:47.792Z [[34mdebug[39m]: Executed query: SELECT * FROM users WHERE email = $1 - Duration: 11ms
+2026-04-09T13:36:47.792Z [[31merror[39m]: 500 - User with this email already exists - /api/auth/register - POST - ::1
+2026-04-09T13:38:43.310Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:38:43.315Z [[32minfo[39m]: 📅 Database time: Thu Apr 09 2026 13:38:43 GMT+0000 (Coordinated Universal Time)
+2026-04-09T13:38:43.318Z [[32minfo[39m]: 🚀 Server running on port 5000
+2026-04-09T13:38:43.318Z [[32minfo[39m]: 📍 Environment: development
+2026-04-09T13:38:43.319Z [[32minfo[39m]: 🔗 API URL: http://localhost:5000
+2026-04-09T13:38:45.434Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:38:45.456Z [[32minfo[39m]: 📅 Database time: Thu Apr 09 2026 13:38:45 GMT+0000 (Coordinated Universal Time)
+2026-04-09T13:38:45.465Z [[32minfo[39m]: 🚀 Server running on port 5000
+2026-04-09T13:38:45.465Z [[32minfo[39m]: 📍 Environment: development
+2026-04-09T13:38:45.465Z [[32minfo[39m]: 🔗 API URL: http://localhost:5000
+2026-04-09T13:38:57.616Z [[34mdebug[39m]: Executed query: SELECT * FROM users WHERE email = $1 - Duration: 3ms
+2026-04-09T13:38:57.617Z [[31merror[39m]: 500 - User with this email already exists - /api/auth/register - POST - ::1
+2026-04-09T13:39:41.540Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:39:41.545Z [[32minfo[39m]: 📅 Database time: Thu Apr 09 2026 13:39:41 GMT+0000 (Coordinated Universal Time)
+2026-04-09T13:39:41.548Z [[32minfo[39m]: 🚀 Server running on port 5000
+2026-04-09T13:39:41.548Z [[32minfo[39m]: 📍 Environment: development
+2026-04-09T13:39:41.548Z [[32minfo[39m]: 🔗 API URL: http://localhost:5000
+2026-04-09T13:40:31.921Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:41:32.064Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:41:32.070Z [[32minfo[39m]: 📅 Database time: Thu Apr 09 2026 13:41:32 GMT+0000 (Coordinated Universal Time)
+2026-04-09T13:41:32.075Z [[32minfo[39m]: 🚀 Server running on port 5000
+2026-04-09T13:41:32.075Z [[32minfo[39m]: 📍 Environment: development
+2026-04-09T13:41:32.075Z [[32minfo[39m]: 🔗 API URL: http://localhost:5000
+2026-04-09T13:43:43.333Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:43:43.338Z [[34mdebug[39m]: Executed query: SELECT * FROM users WHERE email = $1 - Duration: 13ms
+2026-04-09T13:43:43.339Z [[31merror[39m]: 500 - User with this email already exists - /api/auth/register - POST - ::1
+2026-04-09T13:45:25.284Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:45:25.288Z [[34mdebug[39m]: Executed query: SELECT u.*, 
+              COALESCE(ARRAY_AGG(r.role) FILTER (WHERE r.role IS NOT NULL), ARRAY[]::text[]) as roles
+       FROM users u
+       LEFT JOIN user_roles r ON u.id = r.user_id
+       WHERE u.email = $1
+       GROUP BY u.id - Duration: 10ms
+2026-04-09T13:47:24.076Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:47:24.079Z [[34mdebug[39m]: Executed query: SELECT id, email, phone, full_name, user_type, is_verified, is_active, created_at, updated_at
+       FROM users WHERE id = $1 - Duration: 8ms
+2026-04-09T13:47:24.079Z [[31merror[39m]: 500 - UserModel is not defined - /api/auth/me - GET - ::1
+2026-04-09T13:52:07.903Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:52:07.909Z [[32minfo[39m]: 📅 Database time: Thu Apr 09 2026 13:52:07 GMT+0000 (Coordinated Universal Time)
+2026-04-09T13:52:07.911Z [[32minfo[39m]: 🚀 Server running on port 5000
+2026-04-09T13:52:07.912Z [[32minfo[39m]: 📍 Environment: development
+2026-04-09T13:52:07.912Z [[32minfo[39m]: 🔗 API URL: http://localhost:5000
+2026-04-09T13:52:10.660Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:52:10.691Z [[32minfo[39m]: 📅 Database time: Thu Apr 09 2026 13:52:10 GMT+0000 (Coordinated Universal Time)
+2026-04-09T13:52:10.712Z [[32minfo[39m]: 🚀 Server running on port 5000
+2026-04-09T13:52:10.714Z [[32minfo[39m]: 📍 Environment: development
+2026-04-09T13:52:10.717Z [[32minfo[39m]: 🔗 API URL: http://localhost:5000
+2026-04-09T13:53:52.166Z [[32minfo[39m]: ✅ Connected to PostgreSQL database
+2026-04-09T13:53:52.170Z [[34mdebug[39m]: Executed query: SELECT id, email, phone, full_name, user_type, is_verified, is_active, created_at, updated_at
+       FROM users WHERE id = $1 - Duration: 10ms
+2026-04-09T13:53:52.171Z [[34mdebug[39m]: Executed query: SELECT id, email, phone, full_name, user_type, is_verified, is_active, created_at, updated_at
+       FROM users WHERE id = $1 - Duration: 1ms
