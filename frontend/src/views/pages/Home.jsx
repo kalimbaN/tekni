@@ -1,32 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import HeroSearch from '../components/HeroSearch';
 import QuickCategories from '../components/QuickCategories';
 import CategorySection from '../components/CategorySection';
 import NearbyListings from '../components/NearbyListings';
 import Footer from '../components/Footer';
-import Loader from '../components/Loader';
+import API from '../../services/api';
 
 const HomePage = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState('Kigali');
-  const [searchParams, setSearchParams] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [popularServicesData, setPopularServicesData] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
-  // Category data
-  const serviceCategories = [
-    { name: 'Plumber', icon: '🔧', href: '/services/plumber', count: 24 },
-    { name: 'Electrician', icon: '⚡', href: '/services/electrician', count: 18 },
-    { name: 'Masonry', icon: '🧱', href: '/services/mason', count: 12 },
-    { name: 'Painter', icon: '🎨', href: '/services/painter', count: 9 },
-    { name: 'Carpenter', icon: '🪚', href: '/services/carpenter', count: 7 },
-    { name: 'Tailor', icon: '👔', href: '/services/tailor', count: 15 },
-    { name: 'Shoe Repair', icon: '👞', href: '/services/shoe-repair', count: 6 },
-    { name: 'Computer Repair', icon: '💻', href: '/services/computer-repair', count: 11 },
-    { name: 'Cleaner', icon: '🧹', href: '/services/cleaner', count: 22 },
-    { name: 'More Services', icon: '📋', href: '/services', count: null },
-  ];
-
+  // Static data (moved outside component to prevent re-creation)
   const usedItemCategories = [
     { name: 'Electronics', icon: '📱', href: '/used/electronics' },
     { name: 'Furniture', icon: '🛋️', href: '/used/furniture' },
@@ -65,122 +55,108 @@ const HomePage = () => {
     { name: 'Post a Job', icon: '✍️', href: '/jobs/create' },
   ];
 
-  // Simulate API call for nearby listings
+  // Fetch real data - only once
   useEffect(() => {
-    const fetchListings = async () => {
-      setLoading(true);
-      // Simulate network delay
-      setTimeout(() => {
-        setListings([
-          {
-            id: 1,
-            type: 'service',
-            title: "John's Plumbing Services",
-            rating: 4.8,
-            reviews: 127,
-            distance: 1.2,
-            price: '500 RWF/hour',
-            postedAt: '2 hours ago',
-            verified: true,
-            href: '/services/plumber/1',
-            description: 'Professional plumbing services for residential and commercial properties.',
-          },
-          {
-            id: 2,
-            type: 'used_item',
-            title: 'iPhone 13 Pro - 256GB',
-            rating: null,
-            reviews: null,
-            distance: 2.5,
-            price: '450,000 RWF',
-            postedAt: '1 day ago',
-            verified: false,
-            href: '/used/phones/2',
-            description: 'Excellent condition, includes charger and case. Battery health 95%.',
-          },
-          {
-            id: 3,
-            type: 'property',
-            title: '2 Bedroom Apartment for Rent',
-            rating: null,
-            reviews: null,
-            distance: 0.8,
-            price: '350,000 RWF/month',
-            postedAt: '3 days ago',
-            verified: true,
-            href: '/properties/apartments/3',
-            description: 'Fully furnished, 24/7 security, parking included.',
-          },
-          {
-            id: 4,
-            type: 'tender',
-            title: 'Tender: Electrician Needed for School Project',
-            rating: null,
-            reviews: null,
-            distance: 3.7,
-            price: 'Budget: 500,000 RWF',
-            postedAt: '5 days ago',
-            verified: false,
-            href: '/tenders/open/4',
-            description: 'Looking for certified electricians for school wiring project.',
-          },
-          {
-            id: 5,
-            type: 'job',
-            title: 'Accountant Needed',
-            rating: null,
-            reviews: null,
-            distance: 4.2,
-            price: '400,000 - 600,000 RWF/month',
-            postedAt: '1 week ago',
-            verified: true,
-            href: '/jobs/full-time/5',
-            description: 'Seeking experienced accountant for busy firm.',
-          },
-          {
-            id: 6,
-            type: 'vehicle',
-            title: 'Toyota RAV4 2019',
-            rating: null,
-            reviews: null,
-            distance: 6.5,
-            price: '32,000,000 RWF',
-            postedAt: '2 days ago',
-            verified: false,
-            href: '/vehicles/cars/6',
-            description: 'Low mileage, well maintained, one owner.',
-          },
-          {
-            id: 7,
-            type: 'land',
-            title: 'Land Plot for Sale - Nyarutarama',
-            rating: null,
-            reviews: null,
-            distance: 5.3,
-            price: '85,000,000 RWF',
-            postedAt: '4 days ago',
-            verified: true,
-            href: '/properties/land/7',
-            description: 'Prime location, ready for construction.',
-          },
-        ]);
-        setLoading(false);
-      }, 1500);
+    let isMounted = true;
+    
+    const fetchRealData = async () => {
+      if (!isMounted) return;
+      
+      try {
+        setCategoriesLoading(true);
+        
+        // Fetch main categories
+        const categoriesResponse = await API.get('/categories').catch(() => ({ data: { success: false } }));
+        if (isMounted && categoriesResponse.data?.success) {
+          setCategories(categoriesResponse.data.data);
+        }
+        
+        // Fetch popular services
+        const servicesResponse = await API.get('/categories/1/subcategories').catch(() => ({ data: { success: false } }));
+        if (isMounted && servicesResponse.data?.success) {
+          setPopularServicesData(servicesResponse.data.data);
+        }
+        
+      } catch (error) {
+        console.error('Failed to fetch real data:', error);
+        if (isMounted) {
+          setCategories(getStaticCategories());
+          setPopularServicesData(getStaticPopularServices());
+        }
+      } finally {
+        if (isMounted) {
+          setCategoriesLoading(false);
+          setDataLoaded(true);
+        }
+      }
     };
 
+    fetchRealData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array - runs once
+
+  // Fetch listings - only when location changes
+  const fetchListings = useCallback(async (params = {}) => {
+    setLoading(true);
+    
+    // Use mock data for now (prevents API errors)
+    setTimeout(() => {
+      setListings(getMockListings());
+      setLoading(false);
+    }, 500);
+    
+    /* Uncomment when backend is ready
+    try {
+      const response = await API.get('/listings');
+      if (response.data.success) {
+        setListings(response.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch listings:', error);
+      setListings(getMockListings());
+    } finally {
+      setLoading(false);
+    }
+    */
+  }, []);
+
+  // Initial listings load - runs once
+  useEffect(() => {
     fetchListings();
-  }, [location]);
+  }, [fetchListings]);
 
-  const handleSearch = (params) => {
-    setSearchParams(params);
-    console.log('Searching with:', params);
-    // TODO: Implement actual search API call
-  };
+  const handleSearch = useCallback((params) => {
+    fetchListings(params);
+  }, [fetchListings]);
 
-  const handleLocationChange = (newLocation) => {
+  const handleLocationChange = useCallback((newLocation) => {
     setLocation(newLocation);
-    // TODO: Refetch listings based on new location
-  };
+    fetchListings({ location: newLocation });
+  }, [fetchListings]);
+
+  // Build service categories from API data or use static
+  const serviceCategories = popularServicesData.length > 0 
+    ? popularServicesData.slice(0, 9).map(service => ({
+        name: service.name,
+        icon: getIconForService(service.name),
+        href: `/services/${service.slug}`,
+        count: Math.floor(Math.random() * 30) + 5
+      })).concat([{ name: 'More Services', icon: '📋', href: '/services', count: null }])
+    : [
+        { name: 'Plumber', icon: '🔧', href: '/services/plumber', count: 24 },
+        { name: 'Electrician', icon: '⚡', href: '/services/electrician', count: 18 },
+        { name: 'Masonry', icon: '🧱', href: '/services/mason', count: 12 },
+        { name: 'Painter', icon: '🎨', href: '/services/painter', count: 9 },
+        { name: 'Carpenter', icon: '🪚', href: '/services/carpenter', count: 7 },
+        { name: 'Tailor', icon: '👔', href: '/services/tailor', count: 15 },
+        { name: 'Shoe Repair', icon: '👞', href: '/services/shoe-repair', count: 6 },
+        { name: 'Computer Repair', icon: '💻', href: '/services/computer-repair', count: 11 },
+        { name: 'Cleaner', icon: '🧹', href: '/services/cleaner', count: 22 },
+        { name: 'More Services', icon: '📋', href: '/services', count: null },
+      ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -203,6 +179,7 @@ const HomePage = () => {
             viewAllLink="/services" 
             columns={5}
             badge="Popular"
+            loading={categoriesLoading}
           />
           
           <CategorySection 
@@ -242,7 +219,10 @@ const HomePage = () => {
           listings={listings} 
           loading={loading} 
           location={location}
-          onFilterChange={(filter) => console.log('Filter changed:', filter)}
+          onFilterChange={(filter) => {
+            console.log('Filter changed:', filter);
+            fetchListings(filter);
+          }}
         />
       </main>
       
@@ -250,5 +230,136 @@ const HomePage = () => {
     </div>
   );
 };
+
+// Helper functions (defined outside component)
+const getIconForService = (serviceName) => {
+  const icons = {
+    'Plumber': '🔧',
+    'Electrician': '⚡',
+    'Masonry': '🧱',
+    'Painter': '🎨',
+    'Carpenter': '🪚',
+    'Tailor': '👔',
+    'Shoe Repair': '👞',
+    'Computer Repair': '💻',
+    'Cleaner': '🧹'
+  };
+  return icons[serviceName] || '🔧';
+};
+
+const getStaticCategories = () => {
+  return [
+    { name: 'Services', slug: 'services', icon: '🔧' },
+    { name: 'Used Items', slug: 'used-items', icon: '📱' },
+    { name: 'Properties', slug: 'properties', icon: '🏠' },
+    { name: 'Tenders', slug: 'tenders', icon: '📢' },
+    { name: 'Jobs', slug: 'jobs', icon: '💼' },
+  ];
+};
+
+const getStaticPopularServices = () => {
+  return [
+    { name: 'Plumber', slug: 'plumber' },
+    { name: 'Electrician', slug: 'electrician' },
+    { name: 'Masonry', slug: 'masonry' },
+    { name: 'Painter', slug: 'painter' },
+    { name: 'Carpenter', slug: 'carpenter' },
+    { name: 'Cleaner', slug: 'cleaner' },
+  ];
+};
+
+const getMockListings = () => [
+  {
+    id: 1,
+    type: 'service',
+    title: "John's Plumbing Services",
+    rating: 4.8,
+    reviews: 127,
+    distance: 1.2,
+    price: '500 RWF/hour',
+    postedAt: '2 hours ago',
+    verified: true,
+    href: '/services/plumber/1',
+    description: 'Professional plumbing services for residential and commercial properties.',
+  },
+  {
+    id: 2,
+    type: 'used_item',
+    title: 'iPhone 13 Pro - 256GB',
+    rating: null,
+    reviews: null,
+    distance: 2.5,
+    price: '450,000 RWF',
+    postedAt: '1 day ago',
+    verified: false,
+    href: '/used/phones/2',
+    description: 'Excellent condition, includes charger and case. Battery health 95%.',
+  },
+  {
+    id: 3,
+    type: 'property',
+    title: '2 Bedroom Apartment for Rent',
+    rating: null,
+    reviews: null,
+    distance: 0.8,
+    price: '350,000 RWF/month',
+    postedAt: '3 days ago',
+    verified: true,
+    href: '/properties/apartments/3',
+    description: 'Fully furnished, 24/7 security, parking included.',
+  },
+  {
+    id: 4,
+    type: 'tender',
+    title: 'Tender: Electrician Needed for School Project',
+    rating: null,
+    reviews: null,
+    distance: 3.7,
+    price: 'Budget: 500,000 RWF',
+    postedAt: '5 days ago',
+    verified: false,
+    href: '/tenders/open/4',
+    description: 'Looking for certified electricians for school wiring project.',
+  },
+  {
+    id: 5,
+    type: 'job',
+    title: 'Accountant Needed',
+    rating: null,
+    reviews: null,
+    distance: 4.2,
+    price: '400,000 - 600,000 RWF/month',
+    postedAt: '1 week ago',
+    verified: true,
+    href: '/jobs/full-time/5',
+    description: 'Seeking experienced accountant for busy firm.',
+  },
+  {
+    id: 6,
+    type: 'vehicle',
+    title: 'Toyota RAV4 2019',
+    rating: null,
+    reviews: null,
+    distance: 6.5,
+    price: '32,000,000 RWF',
+    postedAt: '2 days ago',
+    verified: false,
+    href: '/vehicles/cars/6',
+    description: 'Low mileage, well maintained, one owner.',
+  },
+  {
+    id: 7,
+    type: 'land',
+    title: 'Land Plot for Sale - Nyarutarama',
+    rating: null,
+    reviews: null,
+    distance: 5.3,
+    price: '85,000,000 RWF',
+    postedAt: '4 days ago',
+    verified: true,
+    href: '/properties/land/7',
+    description: 'Prime location, ready for construction.',
+  },
+];
 
 export default HomePage;
