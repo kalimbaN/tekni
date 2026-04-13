@@ -98,30 +98,21 @@ const HomePage = () => {
     };
   }, []); // Empty dependency array - runs once
 
-  // Fetch listings - only when location changes
-  const fetchListings = useCallback(async (params = {}) => {
-    setLoading(true);
-    
-    // Use mock data for now (prevents API errors)
-    setTimeout(() => {
-      setListings(getMockListings());
-      setLoading(false);
-    }, 500);
-    
-    /* Uncomment when backend is ready
-    try {
-      const response = await API.get('/listings');
-      if (response.data.success) {
-        setListings(response.data.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch listings:', error);
-      setListings(getMockListings());
-    } finally {
-      setLoading(false);
+// Replace the setTimeout mock with real API call
+const fetchListings = useCallback(async (params = {}) => {
+  setLoading(true);
+  try {
+    const response = await API.get('/listings', { params });
+    if (response.data.success) {
+      setListings(response.data.data);
     }
-    */
-  }, []);
+  } catch (error) {
+    console.error('Failed to fetch listings:', error);
+    setListings(getMockListings()); // Fallback only on error
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   // Initial listings load - runs once
   useEffect(() => {
