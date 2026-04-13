@@ -1,6 +1,6 @@
-import db from '../config/db.js';
+const db = require('../config/db');
 
-export const getMainCategories = async (req, res) => {
+const getMainCategories = async (req, res) => {
     try {
         const result = await db.query(
             'SELECT id, name, slug, icon, description FROM main_categories WHERE is_active = true ORDER BY display_order'
@@ -11,7 +11,7 @@ export const getMainCategories = async (req, res) => {
     }
 };
 
-export const getSubcategories = async (req, res) => {
+const getSubcategories = async (req, res) => {
     const { categoryId } = req.params;
     try {
         const result = await db.query(
@@ -24,7 +24,7 @@ export const getSubcategories = async (req, res) => {
     }
 };
 
-export const getCategoryPricing = async (req, res) => {
+const getCategoryPricing = async (req, res) => {
     const { categoryId } = req.params;
     try {
         const result = await db.query(
@@ -38,3 +38,9 @@ export const getCategoryPricing = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+module.exports = {
+    getMainCategories,
+    getSubcategories,
+    getCategoryPricing
+}; 

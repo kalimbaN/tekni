@@ -1,6 +1,6 @@
-import db from '../config/db.js';
+const db = require('../config/db');
 
-export const getProvinces = async (req, res) => {
+const getProvinces = async (req, res) => {
     try {
         const result = await db.query(
             'SELECT id, name, name_fr, code FROM provinces WHERE is_active = true ORDER BY name'
@@ -11,7 +11,7 @@ export const getProvinces = async (req, res) => {
     }
 };
 
-export const getDistricts = async (req, res) => {
+const getDistricts = async (req, res) => {
     const { provinceId } = req.params;
     try {
         const result = await db.query(
@@ -24,7 +24,7 @@ export const getDistricts = async (req, res) => {
     }
 };
 
-export const getSectors = async (req, res) => {
+const getSectors = async (req, res) => {
     const { districtId } = req.params;
     try {
         const result = await db.query(
@@ -37,7 +37,7 @@ export const getSectors = async (req, res) => {
     }
 };
 
-export const getVillages = async (req, res) => {
+const getVillages = async (req, res) => {
     const { sectorId } = req.params;
     try {
         const result = await db.query(
@@ -48,4 +48,11 @@ export const getVillages = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+};
+
+module.exports = {
+    getProvinces,
+    getDistricts,
+    getSectors,
+    getVillages
 };
