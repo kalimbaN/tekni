@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const errorMiddleware = require('./middleware/error.middleware');
 const logger = require('./utils/logger');
+import locationRoutes from './routes/location.routes.js';
 
 // Import routes
 const authRoutes = require('./routes/auth.routes');
@@ -24,6 +25,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Add this after your auth routes
+app.use('/api/locations', locationRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
